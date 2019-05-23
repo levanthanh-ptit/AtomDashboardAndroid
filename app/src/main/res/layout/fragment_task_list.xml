@@ -35,32 +35,20 @@
         android:textSize="40sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_change_orientation"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="5dp"
-        android:background="@drawable/rotage_button"
-        android:elevation="10dp"
-        android:gravity="center"
-        android:textColor="#FFFFFF"
-        android:textSize="40sp"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@+id/btn_scroll_top"
-        app:layout_constraintRight_toLeftOf="@+id/btn_scroll_top"/>
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_add_task"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginEnd="15dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="5dp"
         android:background="@drawable/add_button"
         android:elevation="10dp"
         android:gravity="center"
         android:textColor="#FFFFFF"
         android:textSize="40sp"
-        app:layout_constraintTop_toTopOf="@+id/btn_change_orientation"
-        app:layout_constraintRight_toLeftOf="@+id/btn_change_orientation"/>
+        app:layout_constraintRight_toLeftOf="@id/btn_scroll_top"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteY="677dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,7 @@
 package com.atom.dashboardandroid.TaskList.View;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,8 +47,6 @@ public class TaskListFragment extends Fragment {
     RecyclerView taskListView;
     @BindView(R.id.btn_scroll_top)
     AppCompatButton btnScrollTop;
-    @BindView(R.id.btn_change_orientation)
-    AppCompatButton btnChangeOrientation;
     @BindView(R.id.btn_add_task)
     AppCompatButton btnAddTask;
 
@@ -63,8 +63,28 @@ public class TaskListFragment extends Fragment {
 
             @Override
             public void OnDeleteTask(Task task, int position) {
-                Toast.makeText(getContext(), "Item " + task.getTitle() + " Deleted", Toast.LENGTH_SHORT).show();
-                removeItem(task, position);
+                AlertDialog deleteAlertDialog = new AlertDialog.Builder(getContext())
+                        .setMessage("Confirm to delete "+task.getTitle()+"?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                Toast.makeText(getContext(), "Item " + task.getTitle() + " Deleted", Toast.LENGTH_SHORT).show();
+                                removeItem(task, position);
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                dialog.dismiss();
+                            }
+                        }).create();
+                deleteAlertDialog.show();
             }
 
             @Override
@@ -90,16 +110,7 @@ public class TaskListFragment extends Fragment {
                 taskListView.smoothScrollToPosition(0);
             }
         });
-        btnChangeOrientation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (((LinearLayoutManager) taskListLayoutManager).getOrientation() == RecyclerView.HORIZONTAL) {
-                    changeLayoutDimension(Orientation.VERTICAL);
-                } else if (((LinearLayoutManager) taskListLayoutManager).getOrientation() == RecyclerView.VERTICAL) {
-                    changeLayoutDimension(Orientation.HORIZONTAL);
-                }
-            }
-        });
+
         btnAddTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

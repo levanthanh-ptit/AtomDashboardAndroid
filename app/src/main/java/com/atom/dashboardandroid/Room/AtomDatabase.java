@@ -25,7 +25,8 @@ public abstract class AtomDatabase extends RoomDatabase {
                 if (instance == null) {
                     instance = Room.databaseBuilder(context.getApplicationContext(),
                             AtomDatabase.class, DB_NAME)
-                            .fallbackToDestructiveMigration().addCallback(seedingCallback)
+                            .fallbackToDestructiveMigration()
+                            .addCallback(seedingCallback)
                             .allowMainThreadQueries()
                             .build();
                 }
