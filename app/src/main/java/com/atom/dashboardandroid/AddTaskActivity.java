@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.atom.dashboardandroid.Room.Entities.Task;
 import com.atom.dashboardandroid.TaskList.View.TaskListFragment;
@@ -44,24 +45,30 @@ public class AddTaskActivity extends AppCompatActivity {
                 if (!outRect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
                     v.clearFocus();
                     InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(),0);
+                    inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 }
             }
         }
         return super.dispatchTouchEvent(ev);
+
     }
 
-    private void addListener() {
+    private void addListener(Context context) {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String title = editTextTitle.getText().toString();
+                String content = editTextContent.getText().toString();
+                if(title.compareTo("")==0){
+                    Toast.makeText(context, "Title should not be empty!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 if (EDIT_TASK_MODE) {
-                    currentTask.setTitle(editTextTitle.getText().toString());
-                    currentTask.setContent(editTextContent.getText().toString());
+                    currentTask.setTitle(title);
+                    currentTask.setContent(content);
                     taskViewModel.update(currentTask);
                 } else {
-                    taskViewModel.insert(new Task(editTextTitle.getText().toString(),
-                            editTextContent.getText().toString(), false));
+                    taskViewModel.insert(new Task(title, content, false));
                 }
                 finish();
 
@@ -84,6 +91,6 @@ public class AddTaskActivity extends AppCompatActivity {
         }
 
         taskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
-        addListener();
+        addListener(this);
     }
 }

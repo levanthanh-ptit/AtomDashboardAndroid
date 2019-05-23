@@ -9,7 +9,6 @@
     <corners
         android:radius="15dp"
         />
-
     <!--<gradient-->
         <!--android:startColor="#ffd4ba"-->
         <!--android:centerColor="#f9d9dd"-->
