@@ -192,12 +192,10 @@ public class TaskListFragment extends Fragment {
 
     private void changeItem(Task task, int position) {
         taskViewModel.update(task);
-        taskListAdapter.notifyItemChanged(position);
     }
 
     private void removeItem(Task task, int position) {
         taskViewModel.delete(task);
-        taskListAdapter.notifyItemRemoved(position);
     }
 
     public void editTask(Task task) {
