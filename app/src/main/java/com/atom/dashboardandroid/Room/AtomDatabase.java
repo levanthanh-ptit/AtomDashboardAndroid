@@ -27,7 +27,6 @@ public abstract class AtomDatabase extends RoomDatabase {
                             AtomDatabase.class, DB_NAME)
                             .fallbackToDestructiveMigration()
                             .addCallback(seedingCallback)
-                            .allowMainThreadQueries()
                             .build();
                 }
             }

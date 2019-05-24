@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(tabPager);
         tabPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         //add fragment to tabAdapter
-        TaskListFragment taskListFragment = new TaskListFragment(Orientation.VERTICAL);
+        TaskListFragment taskListFragment = new TaskListFragment();
         tabAdapter.addFragment(taskListFragment, "Tasks", tabLayout, R.drawable.ic_tab);
         for (int i = 0; i < tabAdapter.getCount(); i++) {
             tabLayout.getTabAt(i).setIcon(R.drawable.ic_tab);

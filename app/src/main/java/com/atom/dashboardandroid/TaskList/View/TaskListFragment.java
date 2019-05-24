@@ -15,7 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,13 +29,17 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class TaskListFragment extends Fragment {
-
+    public static final String TAG = "TASK_LIST_FRAGMENT";
     public static final String EDIT_TASK = "TaskListFragment.EditTask";
 
-    private Orientation defaultOrientation = Orientation.VERTICAL;
-
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
     private TaskViewModel taskViewModel;
     private TaskListAdapter taskListAdapter;
     private RecyclerView.LayoutManager taskListLayoutManager;
@@ -50,12 +53,71 @@ public class TaskListFragment extends Fragment {
     @BindView(R.id.btn_add_task)
     AppCompatButton btnAddTask;
 
-    public TaskListFragment(Orientation defaultOrientation) {
-        super();
-        this.defaultOrientation = defaultOrientation;
-    }
-
     private void addListener() {
+        Disposable disposableGetAllTask = taskViewModel.getListTaskBehaviorSubject()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(new Consumer<List<Task>>() {
+                    @Override
+                    public void accept(List<Task> tasks) throws Exception {
+                        taskListAdapter.setTasks(tasks);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.d(TAG, throwable.getMessage());
+                    }
+                });
+        Disposable disposableInsertTask = taskViewModel.getInsertBehaviorSubject()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(new Consumer<TaskViewModel.InsertResponse>() {
+                    @Override
+                    public void accept(TaskViewModel.InsertResponse insertRespose) throws Exception {
+                        Task t = insertRespose.getTask();
+                        taskListAdapter.insertTask(t);
+                        Toast.makeText(getContext(), "Item " + t.getTitle() + " Inserted", Toast.LENGTH_SHORT).show();
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.d(TAG, throwable.getMessage());
+                    }
+                });
+        Disposable disposableDeleteTask = taskViewModel.getDeleteBehaviorSubject()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(new Consumer<TaskViewModel.DeleteResponse>() {
+                    @Override
+                    public void accept(TaskViewModel.DeleteResponse deleteResponse) throws Exception {
+                        Task t = deleteResponse.getTask();
+                        taskListAdapter.deleteTask(t);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.d(TAG, throwable.getMessage());
+                    }
+                });
+        Disposable disposableUpdateTask = taskViewModel.getUpdateBehaviorSubject()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(new Consumer<TaskViewModel.UpdateResponse>() {
+                    @Override
+                    public void accept(TaskViewModel.UpdateResponse updateResponse) throws Exception {
+                        Task t = updateResponse.getTask();
+                        taskListAdapter.updateTask(t);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.d(TAG, throwable.getMessage());
+                    }
+                });
+        this.compositeDisposable.add(disposableGetAllTask);
+        this.compositeDisposable.add(disposableInsertTask);
+        this.compositeDisposable.add(disposableDeleteTask);
+        this.compositeDisposable.add(disposableUpdateTask);
         onActionListener = new OnActionListener() {
             @Override
             public void OnShowDetail(Task task, int position) {
@@ -64,7 +126,7 @@ public class TaskListFragment extends Fragment {
             @Override
             public void OnDeleteTask(Task task, int position) {
                 AlertDialog deleteAlertDialog = new AlertDialog.Builder(getContext())
-                        .setMessage("Confirm to delete "+task.getTitle()+"?")
+                        .setMessage("Confirm to delete " + task.getTitle() + "?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -121,54 +183,33 @@ public class TaskListFragment extends Fragment {
     }
 
     private void init() {
-        taskListLayoutManager = new LinearLayoutManager(getContext(),
-                this.defaultOrientation == Orientation.HORIZONTAL ?
-                        RecyclerView.HORIZONTAL : RecyclerView.VERTICAL,
-                false);
+        taskListLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
         taskListView.setLayoutManager(taskListLayoutManager);
         addListener();
-        taskListAdapter = new TaskListAdapter(this.defaultOrientation, this.onActionListener);
+        taskListAdapter = new TaskListAdapter(this.onActionListener);
         taskListView.setAdapter(taskListAdapter);
     }
 
-    private void changeLayoutDimension(Orientation orientation) {
-        Log.d("AAA", "changeLayoutDimension: " + orientation);
-        if (orientation == Orientation.VERTICAL) {
-            ((LinearLayoutManager) taskListLayoutManager).setOrientation(RecyclerView.VERTICAL);
-        } else {
-            ((LinearLayoutManager) taskListLayoutManager).setOrientation(RecyclerView.HORIZONTAL);
-        }
-        taskListAdapter = new TaskListAdapter(orientation, this.onActionListener);
-        taskListView.setAdapter(taskListAdapter);
-        taskListAdapter.notifyDataSetChanged();
-    }
-    private void changeItem(Task task,int position) {
+    private void changeItem(Task task, int position) {
         taskViewModel.update(task);
         taskListAdapter.notifyItemChanged(position);
-        taskListAdapter.notifyDataSetChanged();
     }
+
     private void removeItem(Task task, int position) {
         taskViewModel.delete(task);
         taskListAdapter.notifyItemRemoved(position);
-        taskListAdapter.notifyDataSetChanged();
     }
 
-    public void editTask(Task task){
+    public void editTask(Task task) {
         Intent intent = new Intent(getActivity(), AddTaskActivity.class);
-        intent.putExtra(EDIT_TASK,task);
+        intent.putExtra(EDIT_TASK, task);
         startActivity(intent);
     }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         taskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
-        taskViewModel.getAll().observe(this, new Observer<List<Task>>() {
-            @Override
-            public void onChanged(@Nullable final List<Task> tasks) {
-                taskListAdapter.setTasks(tasks);
-                taskListAdapter.notifyDataSetChanged();
-            }
-        });
     }
 
     @Nullable
@@ -181,5 +222,11 @@ public class TaskListFragment extends Fragment {
         ButterKnife.bind(this, v);
         init();
         return v;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        compositeDisposable.dispose();
     }
 }

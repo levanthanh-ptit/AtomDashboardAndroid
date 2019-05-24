@@ -13,9 +13,11 @@ import com.atom.dashboardandroid.Room.Entities.Task;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+
 public class TaskRepository implements DataSource<Task> {
     private DaoTask daoTask;
-    private LiveData<List<Task>> mAllTasks;
+    private Flowable<List<Task>> mAllTasks;
 
     public TaskRepository(Application application) {
         AtomDatabase db = AtomDatabase.getInstance(application);
@@ -39,21 +41,8 @@ public class TaskRepository implements DataSource<Task> {
     }
 
     @Override
-    public LiveData<List<Task>> getAll() {
+    public Flowable<List<Task>> getAll() {
         return mAllTasks;
     }
 
-    private static class insertAsyncTask extends AsyncTask<Task, Void, Void> {
-        private DaoTask mAsyncTaskDao;
-
-        insertAsyncTask(DaoTask daoTask) {
-            mAsyncTaskDao = daoTask;
-        }
-
-        @Override
-        protected Void doInBackground(Task... tasks) {
-            mAsyncTaskDao.insert(tasks[0]);
-            return null;
-        }
-    }
 }

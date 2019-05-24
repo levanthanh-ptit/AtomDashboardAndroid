@@ -27,24 +27,18 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.Holder
     private static final String TAG = "ATOMDEBUG";
     private List<Task> tasks = new ArrayList<>();
     private final OnActionListener listener;
-    private Orientation orientation;
     private boolean ON_BIND;
-    public TaskListAdapter(Orientation orientation, OnActionListener listener) {
+
+    public TaskListAdapter(OnActionListener listener) {
         this.listener = listener;
-        this.orientation = orientation;
     }
 
     @Override
     @NonNull
     public TaskListAdapter.Holder onCreateViewHolder(@NonNull ViewGroup parent, int type) {
         View v;
-        if (this.orientation == Orientation.HORIZONTAL) {
-            v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.task_item_horizontal, parent, false);
-        } else {
-            v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.text_row_item, parent, false);
-        }
+        v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.text_row_item, parent, false);
         return new Holder(v);
     }
 
@@ -55,22 +49,34 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.Holder
 
     @Override
     public int getItemCount() {
-        if(tasks!=null)
+        if (tasks != null)
             return tasks.size();
         else
             return 0;
-    }
-
-    public void setOrientation(Orientation orientation) {
-        this.orientation = orientation;
-        super.notifyDataSetChanged();
     }
 
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
         notifyDataSetChanged();
     }
+    public void insertTask(Task task){
+        tasks.add(task);
+        notifyItemInserted(getItemCount());
+        notifyDataSetChanged();
+    }
+    public void updateTask(Task task){
 
+        int index = tasks.indexOf(task);
+        notifyItemChanged(index);
+        notifyDataSetChanged();
+    }
+    public void deleteTask(Task task){
+        int index = tasks.indexOf(task);
+        tasks.remove(index);
+        notifyItemRemoved(index);
+        notifyItemRangeChanged(index, getItemCount());
+        notifyDataSetChanged();
+    }
     public class Holder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.check_box_complete)
@@ -89,12 +95,8 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.Holder
         Holder(View v) {
             super(v);
             ButterKnife.bind(this, v);
-            if (orientation == Orientation.HORIZONTAL) {
-                normalVisibility = View.VISIBLE;
-            } else {
-                normalVisibility = View.GONE;
-            }
-            valueAnimator = ValueAnimator.ofFloat(0.2f,1.0f);
+            normalVisibility = View.GONE;
+            valueAnimator = ValueAnimator.ofFloat(0.2f, 1.0f);
             valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
             valueAnimator.setDuration(500);
         }
@@ -108,7 +110,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.Holder
             valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
-                    if(!ON_BIND){
+                    if (!ON_BIND) {
                         float progress = (float) animation.getAnimatedValue();
                         container.setAlpha(progress);
                     }
@@ -117,8 +119,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.Holder
             this.cb_complete.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    Log.d(TAG, "onCheckedChanged: "+(isChecked?"true":"false"));
-                    if(!ON_BIND){
+                    if (!ON_BIND) {
                         currentTask.setComplete(isChecked);
                         actionListener.OnTaskChange(currentTask, position);
                     }
@@ -127,7 +128,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.Holder
             this.btnEditTask.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                actionListener.OnEditTask(currentTask);
+                    actionListener.OnEditTask(currentTask);
                 }
             });
             this.container.setOnClickListener(new View.OnClickListener() {

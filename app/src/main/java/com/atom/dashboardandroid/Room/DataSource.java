@@ -6,6 +6,8 @@ import com.atom.dashboardandroid.Room.Entities.Task;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+
 
 public interface DataSource<T extends Task> {
     void insert(T t);
@@ -14,5 +16,5 @@ public interface DataSource<T extends Task> {
 
     void delete(T t);
 
-    LiveData<List<T>> getAll();
+    Flowable<List<T>> getAll();
 }

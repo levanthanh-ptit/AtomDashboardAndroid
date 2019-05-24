@@ -33,6 +33,10 @@ public class Task implements Serializable {
         this.complete = complete;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -44,4 +48,5 @@ public class Task implements Serializable {
     public Boolean getComplete() {
         return complete;
     }
+
 }

@@ -11,6 +11,8 @@ import com.atom.dashboardandroid.Room.Entities.Task;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+
 @Dao
 public interface DaoTask {
     @Insert
@@ -20,5 +22,5 @@ public interface DaoTask {
     @Update
     void update(Task task);
     @Query("SELECT * FROM task")
-    LiveData<List<Task>> getAll();
+    Flowable<List<Task>> getAll();
 }
