@@ -1,19 +1,10 @@
 package com.atom.dashboardandroid;
 
-import android.graphics.drawable.Drawable;
-import android.os.Handler;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
-
-import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +35,7 @@ public class TabAdapter extends FragmentStatePagerAdapter {
     }
 
 
-    public void addFragment(Fragment fragment, String title, TabLayout tabLayout, int icon) {
+    public void addFragment(Fragment fragment, String title) {
         mFragmentList.add(fragment);
         mFragmentTitleList.add(title);
         notifyDataSetChanged();

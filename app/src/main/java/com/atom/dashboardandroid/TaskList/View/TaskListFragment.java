@@ -13,12 +13,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.atom.dashboardandroid.AddTaskActivity;
 import com.atom.dashboardandroid.R;
@@ -38,36 +36,88 @@ import io.reactivex.schedulers.Schedulers;
 public class TaskListFragment extends Fragment {
     public static final String TAG = "TASK_LIST_FRAGMENT";
     public static final String EDIT_TASK = "TaskListFragment.EditTask";
-
+    private TASKLIST_TYPE taskList_type = TASKLIST_TYPE.COMPLETE;
+    private boolean ON_INIT;
     CompositeDisposable compositeDisposable = new CompositeDisposable();
     private TaskViewModel taskViewModel;
     private TaskListAdapter taskListAdapter;
     private RecyclerView.LayoutManager taskListLayoutManager;
     private OnActionListener onActionListener;
-    @BindView(R.id.swipe_refresh)
-    SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.task_list)
     RecyclerView taskListView;
-    @BindView(R.id.btn_scroll_top)
-    AppCompatButton btnScrollTop;
-    @BindView(R.id.btn_add_task)
-    AppCompatButton btnAddTask;
+
+
+    public TaskListFragment() {
+        super();
+    }
+
+    public TaskListFragment(TASKLIST_TYPE taskList_type) {
+        super();
+        this.taskList_type = taskList_type;
+    }
 
     private void addListener() {
-        Disposable disposableGetAllTask = taskViewModel.getListTaskBehaviorSubject()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.newThread())
-                .subscribe(new Consumer<List<Task>>() {
-                    @Override
-                    public void accept(List<Task> tasks) throws Exception {
-                        taskListAdapter.setTasks(tasks);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        Log.d(TAG, throwable.getMessage());
-                    }
-                });
+        Log.d(TAG, "addListener ->() " + taskList_type);
+        switch (taskList_type) {
+            case ALL: {
+                Disposable disposableGetAllTasks = taskViewModel.getListTaskBehaviorSubject()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.newThread())
+                        .subscribe(new Consumer<List<Task>>() {
+                            @Override
+                            public void accept(List<Task> tasks) throws Exception {
+                                if (!ON_INIT) taskListAdapter.setTasks(tasks);
+                                Log.d(TAG, "accept: disposableGetAllTasks"+TaskListFragment.this.getId());
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                                Log.d(TAG, throwable.getMessage());
+                            }
+                        });
+                this.compositeDisposable.add(disposableGetAllTasks);
+                break;
+            }
+            case COMPLETE: {
+                Disposable disposableGetAllCompletedTasks = taskViewModel.getListCompletedTaskBehaviorSubject()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.newThread())
+                        .subscribe(new Consumer<List<Task>>() {
+                            @Override
+                            public void accept(List<Task> tasks) throws Exception {
+                                if (!ON_INIT) taskListAdapter.setTasks(tasks);
+                                Log.d(TAG, "accept: disposableGetAllCompletedTasks"+TaskListFragment.this.getId());
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                                Log.d(TAG, throwable.getMessage());
+                            }
+                        });
+                this.compositeDisposable.add(disposableGetAllCompletedTasks);
+                break;
+            }
+            case UNCOMPLETE: {
+                Disposable disposableGetAllUncompletedTasks = taskViewModel.getListUncompletedTaskBehaviorSubject()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.newThread())
+                        .subscribe(new Consumer<List<Task>>() {
+                            @Override
+                            public void accept(List<Task> tasks) throws Exception {
+                                if (!ON_INIT) taskListAdapter.setTasks(tasks);
+                                Log.d(TAG, "accept: disposableGetAllUncompletedTasks::: "+TaskListFragment.this.getId());
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                                Log.d(TAG, throwable.getMessage());
+                            }
+                        });
+                this.compositeDisposable.add(disposableGetAllUncompletedTasks);
+                break;
+            }
+        }
+
         Disposable disposableInsertTask = taskViewModel.getInsertBehaviorSubject()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
@@ -75,8 +125,9 @@ public class TaskListFragment extends Fragment {
                     @Override
                     public void accept(TaskViewModel.InsertResponse insertRespose) throws Exception {
                         Task t = insertRespose.getTask();
-                        taskListAdapter.insertTask(t);
+                        if (!ON_INIT) taskListAdapter.insertTask(t);
                         Toast.makeText(getContext(), "Item " + t.getTitle() + " Inserted", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "disposableInsertTask");
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -84,6 +135,7 @@ public class TaskListFragment extends Fragment {
                         Log.d(TAG, throwable.getMessage());
                     }
                 });
+        this.compositeDisposable.add(disposableInsertTask);
         Disposable disposableDeleteTask = taskViewModel.getDeleteBehaviorSubject()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
@@ -91,7 +143,8 @@ public class TaskListFragment extends Fragment {
                     @Override
                     public void accept(TaskViewModel.DeleteResponse deleteResponse) throws Exception {
                         Task t = deleteResponse.getTask();
-                        taskListAdapter.deleteTask(t);
+                        if (!ON_INIT) taskListAdapter.deleteTask(t);
+                        Log.d(TAG, "disposableDeleteTask");
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -99,6 +152,7 @@ public class TaskListFragment extends Fragment {
                         Log.d(TAG, throwable.getMessage());
                     }
                 });
+        this.compositeDisposable.add(disposableDeleteTask);
         Disposable disposableUpdateTask = taskViewModel.getUpdateBehaviorSubject()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
@@ -106,7 +160,8 @@ public class TaskListFragment extends Fragment {
                     @Override
                     public void accept(TaskViewModel.UpdateResponse updateResponse) throws Exception {
                         Task t = updateResponse.getTask();
-                        taskListAdapter.updateTask(t);
+                        if (!ON_INIT) taskListAdapter.updateTask(t);
+                        Log.d(TAG, "disposableUpdateTask");
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -114,9 +169,6 @@ public class TaskListFragment extends Fragment {
                         Log.d(TAG, throwable.getMessage());
                     }
                 });
-        this.compositeDisposable.add(disposableGetAllTask);
-        this.compositeDisposable.add(disposableInsertTask);
-        this.compositeDisposable.add(disposableDeleteTask);
         this.compositeDisposable.add(disposableUpdateTask);
         onActionListener = new OnActionListener() {
             @Override
@@ -132,7 +184,7 @@ public class TaskListFragment extends Fragment {
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                                 Toast.makeText(getContext(), "Item " + task.getTitle() + " Deleted", Toast.LENGTH_SHORT).show();
-                                removeItem(task, position);
+                                if (!ON_INIT) removeItem(task, position);
                             }
                         })
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -159,39 +211,30 @@ public class TaskListFragment extends Fragment {
                 changeItem(task, position);
             }
         };
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                Log.d("REF", "onRefresh: OK");
-                new Handler().postDelayed(() -> swipeRefreshLayout.setRefreshing(false), 3000);
-            }
-        });
-        btnScrollTop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                taskListView.smoothScrollToPosition(0);
-            }
-        });
-
-        btnAddTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), AddTaskActivity.class);
-                startActivity(intent);
-            }
-        });
     }
 
     private void init() {
+        ON_INIT = true;
         taskListLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
         taskListView.setLayoutManager(taskListLayoutManager);
         addListener();
         taskListAdapter = new TaskListAdapter(this.onActionListener);
         taskListView.setAdapter(taskListAdapter);
+        ON_INIT = false;
+    }
+
+    public void smoothScrollToTop() {
+        taskListView.smoothScrollToPosition(0);
     }
 
     private void changeItem(Task task, int position) {
-        taskViewModel.update(task);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "run: delayed 0.5s");
+                taskViewModel.update(task);
+            }
+        }, 500);
     }
 
     private void removeItem(Task task, int position) {
@@ -207,7 +250,22 @@ public class TaskListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        String savedTaskList_type = null;
+        try {
+            savedTaskList_type = savedInstanceState.getString("taskList_type");
+        } catch (NullPointerException e) {
+
+        }
+        if (savedTaskList_type != null) {
+            this.taskList_type = TASKLIST_TYPE.valueOf(savedTaskList_type);
+        }
         taskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putString("taskList_type", this.taskList_type.toString());
+        super.onSaveInstanceState(outState);
     }
 
     @Nullable

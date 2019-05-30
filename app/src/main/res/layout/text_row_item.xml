@@ -17,38 +17,48 @@
         android:id="@+id/check_box_complete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
+        android:checked="true"
         android:theme="@style/CheckBoxTheme"
-        android:checked="true"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/row_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintLeft_toRightOf="@id/check_box_complete"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/btn_edit_task"
+        android:layout_marginTop="3.2dp"
         android:text="This is sample "
         android:textAlignment="textStart"
         android:textColor="#333"
         android:textSize="20sp"
-        />
+        app:layout_constraintLeft_toRightOf="@id/check_box_complete"
+        app:layout_constraintRight_toLeftOf="@id/btn_edit_task"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/row_content"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/row_title"
-        app:layout_constraintLeft_toRightOf="@id/check_box_complete"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="5dp"
         android:text="This is sample long long long long long long long long long long long long long long long long long long "
         android:textAlignment="textStart"
         android:textColor="#444"
         android:textSize="15sp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="10dp"
         android:visibility="visible"
+        app:layout_constraintLeft_toRightOf="@id/check_box_complete"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/row_title" />
+
+    <TextView
+        android:id="@+id/task_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/row_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:text="date"
         />
 
     <androidx.appcompat.widget.AppCompatButton
@@ -56,9 +66,8 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:background="@drawable/edit_task_button"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:visibility="visible"
-        />
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 

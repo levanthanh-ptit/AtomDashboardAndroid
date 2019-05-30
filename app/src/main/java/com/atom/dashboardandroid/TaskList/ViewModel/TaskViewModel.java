@@ -83,17 +83,29 @@ public class TaskViewModel extends AndroidViewModel {
         super(application);
         this.taskRepository = new TaskRepository(application);
         getAll();
+        getAllCompleted();
+        getAllUncompleted();
     }
 
     private TaskRepository taskRepository;
     CompositeDisposable compositeDisposable = new CompositeDisposable();
     BehaviorSubject<List<Task>> listTaskBehaviorSubject = BehaviorSubject.create();
+    BehaviorSubject<List<Task>> listCompletedTaskBehaviorSubject = BehaviorSubject.create();
+    BehaviorSubject<List<Task>> listUncompletedTaskBehaviorSubject = BehaviorSubject.create();
     BehaviorSubject<InsertResponse> insertBehaviorSubject = BehaviorSubject.create();
     BehaviorSubject<UpdateResponse> updateBehaviorSubject = BehaviorSubject.create();
     BehaviorSubject<DeleteResponse> deleteBehaviorSubject = BehaviorSubject.create();
 
     public BehaviorSubject<List<Task>> getListTaskBehaviorSubject() {
         return listTaskBehaviorSubject;
+    }
+
+    public BehaviorSubject<List<Task>> getListCompletedTaskBehaviorSubject() {
+        return listCompletedTaskBehaviorSubject;
+    }
+
+    public BehaviorSubject<List<Task>> getListUncompletedTaskBehaviorSubject() {
+        return listUncompletedTaskBehaviorSubject;
     }
 
     public BehaviorSubject<InsertResponse> getInsertBehaviorSubject() {
@@ -125,6 +137,7 @@ public class TaskViewModel extends AndroidViewModel {
                     @Override
                     public void onComplete() {
                         insertBehaviorSubject.onNext(new InsertResponse(task, null));
+                        Log.d(TAG, "onComplete: insert");
                     }
 
                     @Override
@@ -152,6 +165,7 @@ public class TaskViewModel extends AndroidViewModel {
                     @Override
                     public void onComplete() {
                         updateBehaviorSubject.onNext(new UpdateResponse(task, null));
+                        Log.d(TAG, "onComplete: update");
                     }
 
                     @Override
@@ -178,6 +192,7 @@ public class TaskViewModel extends AndroidViewModel {
                     @Override
                     public void onComplete() {
                         deleteBehaviorSubject.onNext(new DeleteResponse(task, null));
+                        Log.d(TAG, "onComplete: delete");
                     }
 
                     @Override
@@ -188,12 +203,14 @@ public class TaskViewModel extends AndroidViewModel {
     }
 
     public void getAll() {
-        Disposable disposableGetAll = taskRepository.getAll().observeOn(AndroidSchedulers.mainThread())
+        Disposable disposableGetAll = taskRepository.getAll()
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
                 .subscribe(new Consumer<List<Task>>() {
                     @Override
                     public void accept(List<Task> tasks) throws Exception {
                         listTaskBehaviorSubject.onNext(tasks);
+                        Log.d(TAG, "accept: getAll from repository");
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -203,7 +220,39 @@ public class TaskViewModel extends AndroidViewModel {
                 });
         compositeDisposable.add(disposableGetAll);
     }
-    public static boolean compareTo(Task task1, Task task2){
-        return task1.getId() == task2.getId();
+
+    public void getAllCompleted(){
+        Disposable disposableGetAllCompletedTasks = taskRepository.getAllCompleted()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(new Consumer<List<Task>>() {
+                    @Override
+                    public void accept(List<Task> tasks) throws Exception {
+                        listCompletedTaskBehaviorSubject.onNext(tasks);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.d(TAG, "error: "+ throwable.getMessage() + throwable.getCause());
+                    }
+                });
+        compositeDisposable.add(disposableGetAllCompletedTasks);
+    }
+    public void getAllUncompleted(){
+        Disposable disposableGetAllUncompletedTasks = taskRepository.getAllUncompleted()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe(new Consumer<List<Task>>() {
+                    @Override
+                    public void accept(List<Task> tasks) throws Exception {
+                        listUncompletedTaskBehaviorSubject.onNext(tasks);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.d(TAG, "error: "+ throwable.getMessage() + throwable.getCause());
+                    }
+                });
+        compositeDisposable.add(disposableGetAllUncompletedTasks);
     }
 }

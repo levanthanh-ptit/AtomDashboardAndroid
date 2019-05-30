@@ -13,7 +13,7 @@
         <item name="titleTextColor">@color/white</item>
     </style>
     <style name="CheckBoxTheme" parent="Theme.AppCompat.Light">
-        <item name="colorControlNormal">#FFFFFF</item>
+        <item name="colorControlNormal">#e0e0e0</item>
         <item name="colorControlActivated">#FF0000</item>
     </style>
 </resources>

@@ -1,10 +1,7 @@
 package com.atom.dashboardandroid.Room.Repository;
 
 import android.app.Application;
-import android.os.AsyncTask;
-
-import androidx.lifecycle.LiveData;
-import androidx.room.Dao;
+import android.util.Log;
 
 import com.atom.dashboardandroid.Room.AtomDatabase;
 import com.atom.dashboardandroid.Room.DAO.DaoTask;
@@ -16,6 +13,7 @@ import java.util.List;
 import io.reactivex.Flowable;
 
 public class TaskRepository implements DataSource<Task> {
+    public static final String TAG = "TASK_REPOSITORY";
     private DaoTask daoTask;
     private Flowable<List<Task>> mAllTasks;
 
@@ -42,7 +40,18 @@ public class TaskRepository implements DataSource<Task> {
 
     @Override
     public Flowable<List<Task>> getAll() {
-        return mAllTasks;
+        return daoTask.getAll();
     }
+
+    @Override
+    public Flowable<List<Task>> getAllCompleted() {
+        return daoTask.getAllCompleted();
+    }
+
+    @Override
+    public Flowable<List<Task>> getAllUncompleted() {
+        return daoTask.getAllUncompleted();
+    }
+
 
 }

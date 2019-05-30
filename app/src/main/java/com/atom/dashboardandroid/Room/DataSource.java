@@ -17,4 +17,8 @@ public interface DataSource<T extends Task> {
     void delete(T t);
 
     Flowable<List<T>> getAll();
+
+    Flowable<List<T>> getAllCompleted();
+
+    Flowable<List<Task>> getAllUncompleted();
 }

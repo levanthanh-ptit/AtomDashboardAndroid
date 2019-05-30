@@ -79,7 +79,26 @@
             android:focusable="true"
             android:focusableInTouchMode ="true"
             />
-
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/time_picker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/edit_text_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/date_picker"
+            android:text="time"
+            android:layout_marginTop="30dp"
+            />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/date_picker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/edit_text_content"
+            app:layout_constraintLeft_toRightOf="@id/time_picker"
+            app:layout_constraintRight_toRightOf="parent"
+            android:text="date"
+            android:layout_marginTop="30dp"
+            />
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_action_task"
             android:layout_width="wrap_content"
@@ -91,7 +110,7 @@
             android:text="Add"
             android:textColor="@color/white"
             android:textSize="20sp"
-            app:layout_constraintTop_toBottomOf="@id/edit_text_content"
+            app:layout_constraintTop_toBottomOf="@id/date_picker"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
