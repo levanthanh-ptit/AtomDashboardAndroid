@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     >
     <item
-        android:drawable="@drawable/round_button_primary"
+        android:drawable="@drawable/round_btn_primary"
         >
     </item>
     <item

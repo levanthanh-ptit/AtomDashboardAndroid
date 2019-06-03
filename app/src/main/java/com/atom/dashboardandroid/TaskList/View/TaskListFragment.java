@@ -3,6 +3,7 @@ package com.atom.dashboardandroid.TaskList.View;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -13,12 +14,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.atom.dashboardandroid.AddTaskActivity;
+import com.atom.dashboardandroid.MainActivityListener;
 import com.atom.dashboardandroid.R;
 import com.atom.dashboardandroid.Room.Entities.Task;
 import com.atom.dashboardandroid.TaskList.ViewModel.TaskViewModel;
@@ -43,21 +46,23 @@ public class TaskListFragment extends Fragment {
     private TaskListAdapter taskListAdapter;
     private RecyclerView.LayoutManager taskListLayoutManager;
     private OnActionListener onActionListener;
+    private MainActivityListener mainActivityListener;
     @BindView(R.id.task_list)
     RecyclerView taskListView;
+    private int taskListView_ScrollY = 0;
 
 
     public TaskListFragment() {
         super();
     }
 
-    public TaskListFragment(TASKLIST_TYPE taskList_type) {
+    public TaskListFragment(TASKLIST_TYPE taskList_type, MainActivityListener mainActivityListener) {
         super();
         this.taskList_type = taskList_type;
+        this.mainActivityListener = mainActivityListener;
     }
 
     private void addListener() {
-        Log.d(TAG, "addListener ->() " + taskList_type);
         switch (taskList_type) {
             case ALL: {
                 Disposable disposableGetAllTasks = taskViewModel.getListTaskBehaviorSubject()
@@ -67,7 +72,6 @@ public class TaskListFragment extends Fragment {
                             @Override
                             public void accept(List<Task> tasks) throws Exception {
                                 if (!ON_INIT) taskListAdapter.setTasks(tasks);
-                                Log.d(TAG, "accept: disposableGetAllTasks"+TaskListFragment.this.getId());
                             }
                         }, new Consumer<Throwable>() {
                             @Override
@@ -86,7 +90,6 @@ public class TaskListFragment extends Fragment {
                             @Override
                             public void accept(List<Task> tasks) throws Exception {
                                 if (!ON_INIT) taskListAdapter.setTasks(tasks);
-                                Log.d(TAG, "accept: disposableGetAllCompletedTasks"+TaskListFragment.this.getId());
                             }
                         }, new Consumer<Throwable>() {
                             @Override
@@ -104,8 +107,18 @@ public class TaskListFragment extends Fragment {
                         .subscribe(new Consumer<List<Task>>() {
                             @Override
                             public void accept(List<Task> tasks) throws Exception {
-                                if (!ON_INIT) taskListAdapter.setTasks(tasks);
-                                Log.d(TAG, "accept: disposableGetAllUncompletedTasks::: "+TaskListFragment.this.getId());
+
+                                if (!ON_INIT){
+                                    taskListAdapter.setTasks(tasks);
+                                    if(tasks.size()>0) {
+                                        int grey = ContextCompat.getColor(getContext(),R.color.bg_grey);
+                                        TaskListFragment.this.taskListView.setBackgroundColor(grey);
+                                    }else
+                                    {
+                                        Drawable drawable = ContextCompat.getDrawable(getContext(),R.drawable.empty_task_list_bg);
+                                        TaskListFragment.this.taskListView.setBackground(drawable);
+                                    }
+                                }
                             }
                         }, new Consumer<Throwable>() {
                             @Override
@@ -127,7 +140,6 @@ public class TaskListFragment extends Fragment {
                         Task t = insertRespose.getTask();
                         if (!ON_INIT) taskListAdapter.insertTask(t);
                         Toast.makeText(getContext(), "Item " + t.getTitle() + " Inserted", Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, "disposableInsertTask");
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -144,7 +156,6 @@ public class TaskListFragment extends Fragment {
                     public void accept(TaskViewModel.DeleteResponse deleteResponse) throws Exception {
                         Task t = deleteResponse.getTask();
                         if (!ON_INIT) taskListAdapter.deleteTask(t);
-                        Log.d(TAG, "disposableDeleteTask");
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -161,7 +172,6 @@ public class TaskListFragment extends Fragment {
                     public void accept(TaskViewModel.UpdateResponse updateResponse) throws Exception {
                         Task t = updateResponse.getTask();
                         if (!ON_INIT) taskListAdapter.updateTask(t);
-                        Log.d(TAG, "disposableUpdateTask");
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -170,6 +180,17 @@ public class TaskListFragment extends Fragment {
                     }
                 });
         this.compositeDisposable.add(disposableUpdateTask);
+        this.taskListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (recyclerView.computeVerticalScrollOffset() > 300) {
+                    mainActivityListener.showScrollTop(true);
+                } else {
+                    mainActivityListener.showScrollTop(false);
+                }
+            }
+        });
         onActionListener = new OnActionListener() {
             @Override
             public void OnShowDetail(Task task, int position) {
@@ -218,7 +239,7 @@ public class TaskListFragment extends Fragment {
         taskListLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
         taskListView.setLayoutManager(taskListLayoutManager);
         addListener();
-        taskListAdapter = new TaskListAdapter(this.onActionListener);
+        taskListAdapter = new TaskListAdapter(this.onActionListener, getContext());
         taskListView.setAdapter(taskListAdapter);
         ON_INIT = false;
     }
@@ -231,7 +252,6 @@ public class TaskListFragment extends Fragment {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.d(TAG, "run: delayed 0.5s");
                 taskViewModel.update(task);
             }
         }, 500);

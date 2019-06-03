@@ -5,7 +5,7 @@
     <item
         android:width="50dp"
         android:height="50dp"
-        android:drawable="@drawable/round_button_primary"
+        android:drawable="@drawable/round_btn_primary"
         >
     </item>
     <item

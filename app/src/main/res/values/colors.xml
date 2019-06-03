@@ -7,4 +7,7 @@
     <color name="colorBackground">#FFFFFF</color>
     <color name="colorBorder">#101010</color>
     <color name="white">#FFFFFF</color>
+    <color name="textColorPrimary">#000000</color>
+    <color name="textColorSecondary">#909090</color>
+    <color name="bg_grey">#e0e0e0</color>
 </resources>

@@ -12,11 +12,15 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.atom.dashboardandroid.Room.Entities.Task;
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private int currentTabIndex = 0;
     TaskViewModel taskViewModel;
     TabAdapter tabAdapter;
+    MainActivityListener mainActivityListener;
     @BindView(R.id.tabs)
     TabLayout tabLayout;
     @BindView(R.id.quick_add_task_container)
@@ -42,8 +47,6 @@ public class MainActivity extends AppCompatActivity {
     ValueAnimator animatorQuickAddTaskContainer;
     @BindView(R.id.edt_quick_add_task)
     EditText edtQuickAddTask;
-    @BindView(R.id.btn_quick_add_task)
-    AppCompatButton btnQuickAddTask;
     @BindView(R.id.tab_pager)
     ViewPager tabPager;
     @BindView(R.id.btn_scroll_top)
@@ -74,18 +77,20 @@ public class MainActivity extends AppCompatActivity {
         tabPager.setAdapter(tabAdapter);
         tabPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setupWithViewPager(tabPager);
-        //add fragment to tabAdapter
-        tabAdapter.addFragment(new TaskListFragment(TASKLIST_TYPE.UNCOMPLETE), "Todo");
-        tabAdapter.addFragment(new TaskListFragment(TASKLIST_TYPE.COMPLETE), "Done");
-        tabLayout.getTabAt(0).setIcon(R.drawable.ic_all_task_tab);
-        tabLayout.getTabAt(1).setIcon(R.drawable.ic_completed_task_tab);
     }
 
-    private void addListener() {
+    private void addFragment() {
+        //add fragment to tabAdapter
+        tabAdapter.addFragment(new TaskListFragment(TASKLIST_TYPE.UNCOMPLETE, mainActivityListener), "Todo");
+        tabAdapter.addFragment(new TaskListFragment(TASKLIST_TYPE.COMPLETE, mainActivityListener), "Done");
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_tasks_solid);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_calendar_check_regular);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                MainActivity.this.currentTabIndex = tabPager.getCurrentItem();
+
+                MainActivity.this.currentTabIndex = tab.getPosition();
+                Log.d(TAG, "onTabSelected: "+MainActivity.this.currentTabIndex);
                 onChangeTab();
             }
 
@@ -99,22 +104,33 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        btnQuickAddTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String title = edtQuickAddTask.getText().toString();
-                if (title.compareTo("") != 0) {
-                    taskViewModel.insert(new Task(title, "", Task.UNCOMPLETED, new Date()));
-                    edtQuickAddTask.setText("");
-                } else {
-                    Toast.makeText(MainActivity.this, "Task's title can not be empty", Toast.LENGTH_SHORT);
-                }
-            }
-        });
         btnScrollTop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((TaskListFragment) tabAdapter.getItem(MainActivity.this.currentTabIndex)).smoothScrollToTop();
+            }
+        });
+    }
+
+    private void addListener() {
+        mainActivityListener = new MainActivityListener() {
+            @Override
+            public void showScrollTop(boolean visibility) {
+                if (visibility)
+                    btnScrollTop.setVisibility(View.VISIBLE);
+                else
+                    btnScrollTop.setVisibility(View.GONE);
+            }
+        };
+        edtQuickAddTask.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handle = false;
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    quickAddTask();
+                    handle = true;
+                }
+                return handle;
             }
         });
 
@@ -127,6 +143,16 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void quickAddTask() {
+        String title = edtQuickAddTask.getText().toString();
+        if (title.compareTo("") != 0) {
+            taskViewModel.insert(new Task(title, "", Task.UNCOMPLETED, new Date()));
+            edtQuickAddTask.setText("");
+        } else {
+            Toast.makeText(MainActivity.this, "Task's title can not be empty", Toast.LENGTH_SHORT);
+        }
+    }
+
     private void onChangeTab() {
         if (animatorQuickAddTaskContainer.isRunning()) {
             animatorQuickAddTaskContainer.end();
@@ -136,7 +162,8 @@ public class MainActivity extends AppCompatActivity {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if (MainActivity.this.currentTabIndex != 0) quickAddTaskContainer.setVisibility(View.GONE);
+                    if (MainActivity.this.currentTabIndex != 0)
+                        quickAddTaskContainer.setVisibility(View.GONE);
                 }
             }, animatorQuickAddTaskContainer.getDuration());
         } else {
@@ -154,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
     void animationSetup() {
         animatorQuickAddTaskContainer = ValueAnimator.ofFloat(1.0f, 0.0f);
         animatorQuickAddTaskContainer.setInterpolator(new DecelerateInterpolator());
-        animatorQuickAddTaskContainer.setDuration(100);
+        animatorQuickAddTaskContainer.setDuration(300);
         animatorQuickAddTaskContainer.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -170,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         init();
         addListener();
+        addFragment();
         animationSetup();
     }
 }

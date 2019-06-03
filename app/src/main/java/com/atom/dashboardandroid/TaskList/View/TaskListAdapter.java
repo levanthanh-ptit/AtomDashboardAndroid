@@ -1,6 +1,10 @@
 package com.atom.dashboardandroid.TaskList.View;
 
 import android.animation.ValueAnimator;
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.atom.dashboardandroid.R;
@@ -29,9 +34,11 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.Holder
     private List<Task> tasks = new ArrayList<>();
     private final OnActionListener listener;
     private boolean ON_BIND;
+    Context context;
 
-    public TaskListAdapter(OnActionListener listener) {
+    public TaskListAdapter(OnActionListener listener, Context context) {
         this.listener = listener;
+        this.context = context;
     }
 
     @Override
@@ -97,6 +104,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.Holder
         ViewGroup container;
         private int normalVisibility;
         ValueAnimator blinkAnimator;
+        boolean taskIsDone;
 
         Holder(View v) {
             super(v);
@@ -116,9 +124,52 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.Holder
             SimpleDateFormat dateFormat;
             Calendar calendar = Calendar.getInstance();
             Task currentTask = tasks.get(position);
-
-            this.cb_complete.setChecked(currentTask.getState().compareTo(Task.COMPLETED) == 0);
+            taskIsDone = currentTask.getState().compareTo(Task.COMPLETED) == 0;
+            boolean contentIsEmpty = currentTask.getContent().compareTo("") == 0;
+            if (taskIsDone || contentIsEmpty) {
+                normalVisibility = View.GONE;
+            } else {
+                normalVisibility = View.VISIBLE;
+            }
+            int textColor = ContextCompat.getColor(context, taskIsDone ? R.color.textColorSecondary : R.color.textColorPrimary);
+            if (taskIsDone)
+                this.textView_title.setPaintFlags(textView_title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            else
+                this.textView_title.setPaintFlags(0);
+            this.textView_title.setTextColor(textColor);
             this.textView_title.setText(currentTask.getTitle());
+            blinkAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    if (!ON_BIND) {
+                        float progress = (float) animation.getAnimatedValue();
+                        container.setAlpha(progress);
+                    }
+                }
+            });
+            this.cb_complete.setChecked(taskIsDone);
+            this.cb_complete.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (!ON_BIND) {
+                        currentTask.setState(isChecked ? Task.COMPLETED : Task.UNCOMPLETED);
+                        actionListener.OnTaskChange(currentTask, position);
+                    }
+                }
+            });
+            this.btnEditTask.setVisibility(normalVisibility);
+            this.btnEditTask.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    actionListener.OnEditTask(currentTask);
+                }
+            });
+            this.textView_content.setTextColor(textColor);
+            if (taskIsDone)
+                this.textView_content.setPaintFlags(textView_content.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            else
+                this.textView_content.setPaintFlags(0);
+            this.textView_content.setVisibility(normalVisibility);
             this.textView_content.setText(currentTask.getContent());
             if (currentTask.getDate() != null) {
                 Calendar taskDate = Calendar.getInstance();
@@ -132,42 +183,23 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.Holder
                 }
                 this.textView_date.setText(dateFormat.format(currentTask.getDate()));
             }
-
-            blinkAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    if (!ON_BIND) {
-                        float progress = (float) animation.getAnimatedValue();
-                        container.setAlpha(progress);
-                    }
-                }
-            });
-            this.cb_complete.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (!ON_BIND) {
-                        currentTask.setState(isChecked ? Task.COMPLETED : Task.UNCOMPLETED);
-                        actionListener.OnTaskChange(currentTask, position);
-                    }
-                }
-            });
-            this.btnEditTask.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    actionListener.OnEditTask(currentTask);
-                }
-            });
+            Drawable background;
+            if (taskIsDone)
+                background = ContextCompat.getDrawable(context, R.drawable.round_corners_bg_disable);
+            else
+                background = ContextCompat.getDrawable(context, R.drawable.round_corners_bg);
+            this.container.setBackground(background);
             this.container.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     blinkAnimator.start();
                     actionListener.OnShowDetail(currentTask, position);
-                    if (normalVisibility == textView_content.getVisibility()) {
+                    if (textView_content.getVisibility() == View.GONE) {
+                        if (!taskIsDone) btnEditTask.setVisibility(View.VISIBLE);
                         textView_content.setVisibility(View.VISIBLE);
-                        btnEditTask.setVisibility(View.VISIBLE);
                     } else {
                         textView_content.setVisibility(View.GONE);
-                        btnEditTask.setVisibility(View.GONE);
+                        if (!taskIsDone) btnEditTask.setVisibility(View.GONE);
                     }
                 }
             });

@@ -15,7 +15,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/tab_title_view"
-            android:background="@drawable/ic_all_task_tab"
+            android:background="@drawable/ic_tasks_solid"
             />
     <TextView
         android:id="@+id/tab_title_view"
