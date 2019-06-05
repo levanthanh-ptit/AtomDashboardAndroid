@@ -1,5 +1,6 @@
 package com.atom.dashboardandroid;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -7,6 +8,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
@@ -16,6 +18,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -24,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.atom.dashboardandroid.Room.Entities.Task;
+import com.atom.dashboardandroid.TaskList.View.AddTaskDialog;
 import com.atom.dashboardandroid.TaskList.View.TASKLIST_TYPE;
 import com.atom.dashboardandroid.TaskList.View.TaskListFragment;
 import com.atom.dashboardandroid.TaskList.ViewModel.TaskViewModel;
@@ -69,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return super.dispatchTouchEvent(ev);
+
     }
 
     private void init() {
@@ -137,8 +142,9 @@ public class MainActivity extends AppCompatActivity {
         btnAddTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AddTaskActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(MainActivity.this, AddTaskActivity.class);
+//                startActivity(intent);
+                openAddTaskDialog();
             }
         });
     }
@@ -152,7 +158,16 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "Task's title can not be empty", Toast.LENGTH_SHORT);
         }
     }
-
+    @SuppressLint("ResourceType")
+    private void openAddTaskDialog(){
+        AddTaskDialog addTaskDialog = new AddTaskDialog(MainActivity.this,
+                getLayoutInflater(),
+                MainActivity.this.findViewById(R.layout.activity_main),
+                taskViewModel,
+                false,
+                null);
+        addTaskDialog.show();
+    }
     private void onChangeTab() {
         if (animatorQuickAddTaskContainer.isRunning()) {
             animatorQuickAddTaskContainer.end();

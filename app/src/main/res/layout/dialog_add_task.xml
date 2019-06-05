@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingStart="30dp"
-    android:paddingEnd="30dp"
-    android:paddingTop="15dp"
-    android:paddingBottom="15dp"
-    tools:context=".AddTaskActivity"
     >
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/detail_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:paddingTop="15dp"
         >
         <TextView
             android:id="@+id/label_layout_title"
@@ -78,6 +75,7 @@
             app:layout_constraintTop_toBottomOf="@id/label_content"
             android:focusable="true"
             android:focusableInTouchMode ="true"
+
             />
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/time_picker"
@@ -86,8 +84,13 @@
             app:layout_constraintTop_toBottomOf="@id/edit_text_content"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/date_picker"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:text="time"
-            android:layout_marginTop="30dp"
+            android:textColor="@color/gray"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
+            android:minWidth="100dp"
+            android:background="@drawable/supply_button"
             />
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/date_picker"
@@ -96,30 +99,42 @@
             app:layout_constraintTop_toBottomOf="@id/edit_text_content"
             app:layout_constraintLeft_toRightOf="@id/time_picker"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:text="date"
-            android:layout_marginTop="30dp"
+            android:textColor="@color/gray"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
+            android:minWidth="100dp"
+            android:background="@drawable/supply_button"
 
             />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/detail_container"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:background="#e0e0e0"
+        >
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_action_task"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/action_button"
             android:padding="15dp"
-            android:paddingStart="40dp"
-            android:paddingEnd="40dp"
+            android:paddingStart="32dp"
+            android:paddingEnd="32dp"
+            android:minWidth="100dp"
             android:text="Add"
             android:textColor="@color/white"
             android:textSize="20sp"
-            app:layout_constraintTop_toBottomOf="@id/date_picker"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginTop="30dp"
-            android:layout_marginBottom="15dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
             />
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

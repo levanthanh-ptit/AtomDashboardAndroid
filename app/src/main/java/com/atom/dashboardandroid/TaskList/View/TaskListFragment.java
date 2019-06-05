@@ -1,8 +1,8 @@
 package com.atom.dashboardandroid.TaskList.View;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,7 +20,6 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.atom.dashboardandroid.AddTaskActivity;
 import com.atom.dashboardandroid.MainActivityListener;
 import com.atom.dashboardandroid.R;
 import com.atom.dashboardandroid.Room.Entities.Task;
@@ -49,8 +48,6 @@ public class TaskListFragment extends Fragment {
     private MainActivityListener mainActivityListener;
     @BindView(R.id.task_list)
     RecyclerView taskListView;
-    private int taskListView_ScrollY = 0;
-
 
     public TaskListFragment() {
         super();
@@ -260,11 +257,15 @@ public class TaskListFragment extends Fragment {
     private void removeItem(Task task, int position) {
         taskViewModel.delete(task);
     }
-
+    @SuppressLint("ResourceType")
     public void editTask(Task task) {
-        Intent intent = new Intent(getActivity(), AddTaskActivity.class);
-        intent.putExtra(EDIT_TASK, task);
-        startActivity(intent);
+        AddTaskDialog editTaskDialog = new AddTaskDialog(getContext(),
+                getLayoutInflater(),
+                getActivity().findViewById(R.layout.activity_main),
+                taskViewModel,
+                true,
+                task);
+        editTaskDialog.show();
     }
 
     @Override

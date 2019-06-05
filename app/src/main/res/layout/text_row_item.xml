@@ -8,8 +8,14 @@
     android:layout_marginTop="5dp"
     android:layout_marginBottom="5dp"
     android:background="@drawable/round_corners_bg"
+    android:minHeight="64dp"
+    android:elevation="3dp"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:paddingTop="10dp"
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp"
+    android:paddingBottom="6dp"
+    >
 
     <CheckBox
         android:id="@+id/check_box_complete"
@@ -27,7 +33,7 @@
         android:layout_marginTop="3dp"
         android:text="This is sample "
         android:textAlignment="textStart"
-        android:textColor="#333"
+        android:textColor="@color/textColorPrimary"
         android:textSize="20sp"
         app:layout_constraintLeft_toRightOf="@id/check_box_complete"
         app:layout_constraintRight_toLeftOf="@id/btn_edit_task"
@@ -37,34 +43,32 @@
         android:id="@+id/row_content"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:paddingBottom="16dp"
+        android:paddingTop="4dp"
         android:text="This is sample long long long long long long long long long long long long long long long long long long "
         android:textAlignment="textStart"
-        android:textColor="#444"
+        android:textColor="@color/textColorPrimary"
         android:textSize="15sp"
         android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@id/task_date"
         app:layout_constraintLeft_toRightOf="@id/check_box_complete"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/row_title"
-        app:layout_constraintBottom_toBottomOf="parent"
-        />
+        app:layout_constraintTop_toBottomOf="@id/row_title" />
 
     <TextView
         android:id="@+id/task_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:text="date"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        />
+        app:layout_constraintRight_toRightOf="parent" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_edit_task"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="@drawable/edit_task_button"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginRight="3dp"
+        android:background="@drawable/edit_task_btn"
         android:visibility="visible"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

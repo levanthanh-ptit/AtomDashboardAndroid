@@ -7,6 +7,7 @@
     android:orientation="vertical"
     tools:context=".MainActivity"
     android:focusableInTouchMode="true"
+    android:background="#f2f2f2"
     >
 
     <com.google.android.material.tabs.TabLayout
@@ -15,7 +16,10 @@
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tabInlineLabel="true" />
+        app:tabInlineLabel="true"
+        android:background="#ffffff"
+        android:elevation="3dp"
+        />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/quick_add_task_container"
@@ -24,7 +28,9 @@
         android:background="@drawable/section_bg"
         android:padding="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tabs">
+        app:layout_constraintTop_toBottomOf="@id/tabs"
+        android:elevation="3dp"
+        >
 
         <EditText
             android:id="@+id/edt_quick_add_task"
@@ -62,7 +68,7 @@
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="15dp"
         android:background="@drawable/scroll_start_button"
-        android:elevation="10dp"
+        android:elevation="3dp"
         android:gravity="center"
         android:textColor="#FFFFFF"
         android:textSize="40sp"
@@ -76,7 +82,7 @@
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="15dp"
         android:background="@drawable/add_button"
-        android:elevation="10dp"
+        android:elevation="3dp"
         android:gravity="center"
         android:textColor="#FFFFFF"
         android:textSize="40sp"

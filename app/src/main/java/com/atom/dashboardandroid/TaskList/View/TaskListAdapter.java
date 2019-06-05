@@ -2,7 +2,6 @@ package com.atom.dashboardandroid.TaskList.View;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -135,7 +134,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.Holder
             if (taskIsDone)
                 this.textView_title.setPaintFlags(textView_title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             else
-                this.textView_title.setPaintFlags(0);
+                this.textView_title.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
             this.textView_title.setTextColor(textColor);
             this.textView_title.setText(currentTask.getTitle());
             blinkAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -168,7 +167,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.Holder
             if (taskIsDone)
                 this.textView_content.setPaintFlags(textView_content.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             else
-                this.textView_content.setPaintFlags(0);
+                this.textView_content.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
             this.textView_content.setVisibility(normalVisibility);
             this.textView_content.setText(currentTask.getContent());
             if (currentTask.getDate() != null) {
@@ -177,9 +176,9 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.Holder
                 if (calendar.get(Calendar.YEAR) == taskDate.get(Calendar.YEAR)
                         && calendar.get(Calendar.MONTH) == taskDate.get(Calendar.MONTH)
                         && calendar.get(Calendar.DAY_OF_MONTH) == taskDate.get(Calendar.DAY_OF_MONTH)) {
-                    dateFormat = new SimpleDateFormat("kk:mm");
+                    dateFormat = new SimpleDateFormat("HH:mm");
                 } else {
-                    dateFormat = new SimpleDateFormat("kk:mm-dd/MM");
+                    dateFormat = new SimpleDateFormat("HH:mm dd/MM");
                 }
                 this.textView_date.setText(dateFormat.format(currentTask.getDate()));
             }

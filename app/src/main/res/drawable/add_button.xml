@@ -1,36 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    >
-    <item
-        android:drawable="@drawable/round_btn_primary"
-        >
-    </item>
-    <item
-        android:width="4dp"
-        android:height="20dp"
-        android:gravity="center_horizontal|center_vertical"
-        >
-        <shape
-            android:shape="rectangle"
+<ripple android:color="@color/ripple"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+        <item
+            android:drawable="@drawable/round_btn_primary"
             >
-            <solid android:color="#FFFFFF" />
-        </shape>
-    </item>
-    <item
-        android:width="4dp"
-        android:height="20dp"
-        android:gravity="center_horizontal|center_vertical"
-        >
-        <rotate
-            android:fromDegrees="90"
+        </item>
+        <item
+            android:width="4dp"
+            android:height="20dp"
+            android:gravity="center_horizontal|center_vertical"
             >
             <shape
                 android:shape="rectangle"
                 >
                 <solid android:color="#FFFFFF" />
             </shape>
-        </rotate>
+        </item>
+        <item
+            android:width="4dp"
+            android:height="20dp"
+            android:gravity="center_horizontal|center_vertical"
+            >
+            <rotate
+                android:fromDegrees="90"
+                >
+                <shape
+                    android:shape="rectangle"
+                    >
+                    <solid android:color="#FFFFFF" />
+                </shape>
+            </rotate>
+        </item>
+</ripple>
 
-    </item>
-</layer-list>
