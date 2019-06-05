@@ -95,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
             public void onTabSelected(TabLayout.Tab tab) {
 
                 MainActivity.this.currentTabIndex = tab.getPosition();
-                Log.d(TAG, "onTabSelected: "+MainActivity.this.currentTabIndex);
                 onChangeTab();
             }
 

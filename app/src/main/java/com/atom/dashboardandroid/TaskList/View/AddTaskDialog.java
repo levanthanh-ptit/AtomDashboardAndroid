@@ -112,8 +112,6 @@ public class AddTaskDialog extends AlertDialog {
             Date date = new Date();
             try {
                 date = dateFormat.parse(timePicker.getText() + "-" + datePicker.getText());
-                Log.d(TAG, "Date: " + date.toString());
-                Log.d(TAG, "Date in milis: " + date.getTime());
             } catch (ParseException pe) {
                 Log.d(TAG, "try parse date failed");
             }
@@ -151,11 +149,9 @@ public class AddTaskDialog extends AlertDialog {
         this.taskViewModel = taskViewModel;
         this.EDIT_TASK_MODE = EDIT_TASK_MODE;
         container = layoutInflater.inflate(R.layout.dialog_add_task, parent);
-        Log.d(TAG, "AddTaskDialog: container: "+container);
         ON_INIT = true;
         ButterKnife.bind(this, container);
         ON_INIT = false;
-        Log.d(TAG, "AddTaskDialog: time_picker: "+this.timePicker);
         if (EDIT_TASK_MODE) {
             this.currentTask = task;
             layoutTitle.setText("EDIT TASK");

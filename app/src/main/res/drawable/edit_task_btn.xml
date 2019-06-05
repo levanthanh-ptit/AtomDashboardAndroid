@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/gray">
+    android:color="@color/bg_grey">
+    <item
+        android:width="26dp"
+        android:height="26dp"
+        android:gravity="center_horizontal|center_vertical"
+        >
+        <shape android:shape="oval">
+            <solid android:color="@color/white"/>
+        </shape>
+    </item>
     <item
         android:width="15dp"
         android:height="15dp"

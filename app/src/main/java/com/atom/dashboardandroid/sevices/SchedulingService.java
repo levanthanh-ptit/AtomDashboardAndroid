@@ -55,7 +55,6 @@ public class SchedulingService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
-            Log.d(TAG, "onHandleIntent: system time: "+System.currentTimeMillis());
             Bundle bundle = intent.getExtras();
             int index = bundle.getInt(INDEX, -1);
             String title = bundle.getString(Task.TITLE,"");

@@ -112,10 +112,7 @@ public class AddTaskActivity extends AppCompatActivity {
                     Date date = new Date();
                     try {
                         date = dateFormat.parse(timePicker.getText() + "-" + datePicker.getText());
-                        Log.d(TAG, "Date: " + date.toString());
-                        Log.d(TAG, "Date in milis: " + date.getTime());
                     } catch (ParseException pe) {
-                        Log.d(TAG, "try parse date failed");
                     }
                     if (title.compareTo("") == 0) {
                         Toast.makeText(context, "Title should not be empty!", Toast.LENGTH_SHORT).show();
@@ -171,7 +168,6 @@ public class AddTaskActivity extends AppCompatActivity {
             month = calendar.get(Calendar.MONTH);
             year = calendar.get(Calendar.YEAR);
         }
-        Log.d(TAG, "onCreate: "+hour);
         timePicker.setText(hour + ":" + minute);
         datePicker.setText(day + "/" + (month + 1) + "/" + year);
         taskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);

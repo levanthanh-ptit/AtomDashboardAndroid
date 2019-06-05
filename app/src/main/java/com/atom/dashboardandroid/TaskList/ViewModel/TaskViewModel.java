@@ -137,7 +137,6 @@ public class TaskViewModel extends AndroidViewModel {
                     @Override
                     public void onComplete() {
                         insertBehaviorSubject.onNext(new InsertResponse(task, null));
-                        Log.d(TAG, "onComplete: insert");
                     }
 
                     @Override
@@ -165,7 +164,6 @@ public class TaskViewModel extends AndroidViewModel {
                     @Override
                     public void onComplete() {
                         updateBehaviorSubject.onNext(new UpdateResponse(task, null));
-                        Log.d(TAG, "onComplete: update");
                     }
 
                     @Override
@@ -192,7 +190,6 @@ public class TaskViewModel extends AndroidViewModel {
                     @Override
                     public void onComplete() {
                         deleteBehaviorSubject.onNext(new DeleteResponse(task, null));
-                        Log.d(TAG, "onComplete: delete");
                     }
 
                     @Override
@@ -210,7 +207,6 @@ public class TaskViewModel extends AndroidViewModel {
                     @Override
                     public void accept(List<Task> tasks) throws Exception {
                         listTaskBehaviorSubject.onNext(tasks);
-                        Log.d(TAG, "accept: getAll from repository");
                     }
                 }, new Consumer<Throwable>() {
                     @Override
