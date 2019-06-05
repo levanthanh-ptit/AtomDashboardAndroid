@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -67,6 +68,7 @@ public class AddTaskDialog extends AlertDialog {
         month = calendar.get(Calendar.MONTH);
         day = calendar.get(Calendar.DAY_OF_MONTH);
     }
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
@@ -83,6 +85,7 @@ public class AddTaskDialog extends AlertDialog {
         }
         return super.dispatchTouchEvent(ev);
     }
+
     @OnClick(R.id.time_picker)
     public void setTimePickerOnClick(View v) {
         new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
@@ -168,6 +171,13 @@ public class AddTaskDialog extends AlertDialog {
         }
         timePicker.setText(hour + ":" + minute);
         datePicker.setText(day + "/" + (month + 1) + "/" + year);
+        editTextTitle.requestFocus();
         this.setView(this.container);
+    }
+
+    @Override
+    public void show() {
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        super.show();
     }
 }
